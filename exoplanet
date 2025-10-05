@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expanded Exoplanet Archive | 40 Planets + Educational AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* General Body and Layout */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0c0c16; /* Deep dark space background */
+            color: #e0e0f0; /* Soft white/light blue text */
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            min-height: 100vh;
+        }
+
+        .header-title {
+            color: #64ffda; /* Teal accent color for headers */
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
+        
+        /* Three Column Layout */
+        .planet-list-container, .details-container, .ai-tool-container {
+            background-color: #12121e;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+            border: 2px solid #2a2a44;
+            transition: transform 0.3s ease;
+            width: 30%;
+            max-width: 350px;
+        }
+        
+        /* LIST & SEARCH (Left Column) */
+        .planet-list-container {
+            max-width: 350px;
+        }
+        
+        #search-filter {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 2px solid #64ffda;
+            border-radius: 8px;
+            background-color: #0c0c16;
+            color: #e0e0f0;
+            font-size: 1em;
+            outline: none;
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+
+        #search-filter:focus {
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.7);
+        }
+
+        .planet-list {
+            list-style: none;
+            padding: 0;
+            max-height: 60vh;
+            overflow-y: auto;
+            margin: 0;
+        }
+        
+        /* Custom Scrollbar */
+        .planet-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .planet-list::-webkit-scrollbar-thumb {
+            background-color: #64ffda;
+            border-radius: 10px;
+        }
+        .planet-list::-webkit-scrollbar-track {
+            background: #12121e;
+        }
+
+        .planet-list li {
+            padding: 10px 15px;
+            border-bottom: 1px dashed #3a3a5e;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, border-radius 0.3s;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .planet-list li:hover {
+            background-color: #1a1a2e;
+            color: #64ffda;
+            border-radius: 8px;
+        }
+
+        .planet-list li.active {
+            background: linear-gradient(90deg, #64ffda33 0%, #1a1a2e 100%);
+            color: #fff;
+            font-weight: 800;
+            border-left: 5px solid #64ffda;
+            border-bottom: 1px solid #64ffda;
+        }
+        
+        /* DETAILS (Middle Column) */
+        .details-container {
+            max-width: 450px;
+        }
+        
+        .exoplanet-name {
+            font-size: 2em;
+            color: #64ffda; 
+            margin-top: 0;
+            border-bottom: 3px solid #64ffda;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+        
+        .details-container strong {
+            color: #c9d1d9;
+            display: inline-block;
+            width: 150px;
+            font-weight: 600;
+        }
+
+        .details-container h3 {
+            color: #87cefa;
+            border-bottom: 1px solid #3a3a5e;
+            padding-bottom: 5px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            padding: 20px;
+            border: 1px dashed #64ffda;
+            border-radius: 8px;
+            margin-top: 50px;
+            color: #64ffda;
+            font-size: 1em;
+        }
+
+        /* --- AI TOOL STYLES (Right Column) --- */
+        .ai-tool-container {
+            max-width: 350px;
+        }
+        
+        #ai-query-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 2px solid #ffcc00; /* Gold border for AI tool */
+            border-radius: 8px;
+            background-color: #0c0c16;
+            color: #e0e0f0;
+            font-size: 1em;
+            outline: none;
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+        
+        #ai-query-input:focus {
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+        }
+        
+        #ai-result-content {
+            background-color: #1a1a2e;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 200px;
+            border-left: 5px solid #ffcc00;
+            overflow-y: auto;
+        }
+        
+        #ai-result-content p {
+            line-height: 1.5;
+        }
+        
+        .ai-prompt {
+            color: #87cefa;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .ai-keyword-suggestion {
+            font-size: 0.9em;
+            color: #ffcc00;
+            display: block;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+
+        /* Status classes (reused) */
+        .status-confirmed-habitable { background-color: rgba(100, 255, 218, 0.1); color: #64ffda; border: 1px solid #64ffda;}
+        .status-confirmed-hot { background-color: rgba(255, 99, 71, 0.1); color: #ff6347; border: 1px solid #ff6347;}
+        .status-confirmed-unique { background-color: rgba(255, 204, 0, 0.1); color: #ffcc00; border: 1px solid #ffcc00;}
+        .status-disputed { background-color: rgba(255, 0, 0, 0.1); color: #ff3333; border: 1px solid #ff3333;}
+        .status-super-earth { background-color: rgba(135, 206, 250, 0.1); color: #87cefa; border: 1px solid #87cefa;}
+    </style>
+</head>
+<body>
+
+    <div class="planet-list-container">
+        <h2 class="header-title">Planetary Systems Index (40) 🪐</h2>
+        <input type="text" id="search-filter" placeholder="Filter list (e.g., Kepler, WASP, GJ)...">
+        <ul id="planet-list" class="planet-list">
+            </ul>
+    </div>
+
+    <div class="details-container">
+        <h2 class="header-title">Selected Exoplanet Details</h2>
+        <div id="result-content">
+            <p class="welcome-message">
+                👈 Select a planet name from the index on the left to load the simulated data.
+            </p>
+        </div>
+    </div>
+    
+    <div class="ai-tool-container">
+        <h2 class="header-title">AI Knowledge Base 🧠</h2>
+        <div class="ai-prompt">Query: Exoplanet, Solar System, or Galaxy/Space</div>
+        <input type="text" id="ai-query-input" placeholder="Enter keyword (e.g., Exoplanet)">
+        <span class="ai-keyword-suggestion">Keywords: Exoplanet, Solar System, Galaxy, Space</span>
+        <div id="ai-result-content">
+            <p style="color: #ffcc00; font-style: normal; margin-top: 0;">Awaiting query. Try a keyword from the list above.</p>
+        </div>
+    </div>
+    <script>
+        // --- DATA OBJECT: All 40 Planets (Abbreviated for brevity) ---
+        const planetData = {
+            "proxima centauri b": {
+                name: "Proxima Centauri b", source: "Radial Velocity",
+                classification: "CONFIRMED (Habitable Zone Super-Earth)", statusClass: "status-confirmed-habitable",
+                mass: "1.07 M_Earth", radius: "1.1 R_Earth (Est.)", period: "11.2 Earth Days",
+                hostStar: "Proxima Centauri (M5.5V Red Dwarf)", confidence: "99.1%",
+                keyFeature: "The closest known exoplanet, orbiting in the habitable zone of its small, dim host star. It is likely tidally locked, meaning one side is permanently day and the other is night."
+            },
+            "trappist-1e": {
+                name: "TRAPPIST-1e", source: "Transit Photometry (Spitzer/TESS)",
+                classification: "CONFIRMED (Earth-sized, Temperate Zone)", statusClass: "status-confirmed-habitable",
+                mass: "0.77 M_Earth", radius: "0.92 R_Earth", period: "6.1 Earth Days",
+                hostStar: "TRAPPIST-1 (Ultra-Cool Dwarf)", confidence: "97.5%",
+                keyFeature: "One of seven known terrestrial planets orbiting a tiny star. Its density suggests a rocky composition, and it receives a similar amount of light energy to Earth."
+            },
+            "kepler-186f": {
+                name: "Kepler-186f", source: "Transit Photometry (Kepler)",
+                classification: "CONFIRMED (First Earth-sized planet in HZ)", statusClass: "status-confirmed-habitable",
+                mass: "~1.5 M_Earth (Est.)", radius: "1.11 R_Earth", period: "130.0 Earth Days",
+                hostStar: "Kepler-186 (M1V Red Dwarf)", confidence: "98.9%",
+                keyFeature: "The first validated Earth-sized planet orbiting a star in the habitable zone. It's considered an 'Earth cousin,' receiving about one-third the stellar energy Earth does."
+            },
+            "wasp-12b": {
+                name: "WASP-12b", source: "Transit Photometry (WASP)",
+                classification: "CONFIRMED (Tidally Locked Hot Jupiter)", statusClass: "status-confirmed-hot",
+                mass: "1.41 M_Jupiter", radius: "1.83 R_Jupiter", period: "1.1 Earth Days",
+                hostStar: "WASP-12", confidence: "99.9%",
+                keyFeature: "An extremely close-in gas giant being actively stripped of its atmosphere by its star. Its shape is distorted by tidal forces, making it egg-shaped."
+            },
+            "hd 209458 b": {
+                name: "HD 209458 b (Osiris)", source: "Transit Spectroscopy",
+                classification: "CONFIRMED (First Exoplanet Atmosphere Detected)", statusClass: "status-confirmed-unique",
+                mass: "0.71 M_Jupiter", radius: "1.38 R_Jupiter", period: "3.5 Earth Days",
+                hostStar: "HD 209458 (G0V Sun-like)", confidence: "99.9%",
+                keyFeature: "The first exoplanet where water vapor, sodium, and oxygen were detected in the atmosphere. It's a key target for studying atmospheric escape."
+            },
+            "gliese 581 g": { name: "Gliese 581 g", source: "Radial Velocity", classification: "DISPUTED CANDIDATE", statusClass: "status-disputed", mass: "~3.1 M_Earth", radius: "1.5 R_Earth (Est.)", period: "36.6 Earth Days", hostStar: "Gliese 581 (M3V Red Dwarf)", confidence: "78.5%", keyFeature: "A historically significant but controversial target due to conflicting data on its radial velocity signal." },
+            "corot-7b": { name: "CoRoT-7b", source: "Transit Photometry (CoRoT)", classification: "CONFIRMED (Ultra-Short Period Lava World)", statusClass: "status-confirmed-hot", mass: "~4.8 M_Earth", radius: "1.58 R_Earth", period: "0.85 Earth Days", hostStar: "CoRoT-7 (G9V Sun-like)", confidence: "96.0%", keyFeature: "A scorching hot planet with an orbital period under one Earth day. Its surface is likely molten rock." },
+            "51 pegasi b": { name: "51 Pegasi b", source: "Radial Velocity (Doppler)", classification: "CONFIRMED (Prototype Hot Jupiter)", statusClass: "status-confirmed-hot", mass: "0.46 M_Jupiter", radius: "1.2 R_Jupiter (Est.)", period: "4.2 Earth Days", hostStar: "51 Pegasi (G5V Sun-like)", confidence: "99.8%", keyFeature: "The first confirmed exoplanet orbiting a Sun-like star (1995)." },
+            "kepler-22b": { name: "Kepler-22b", source: "Transit Photometry (Kepler)", classification: "CONFIRMED (Warm Neptunian in HZ)", statusClass: "status-confirmed-habitable", mass: "~23 M_Earth (Est.)", radius: "2.4 R_Earth", period: "290.0 Earth Days", hostStar: "Kepler-22 (G5V Sun-like)", confidence: "95.5%", keyFeature: "The first planet confirmed by the Kepler mission to orbit a star in the habitable zone." },
+            "hd 189733 b": { name: "HD 189733 b", source: "Transit/Atmospheric Spectroscopy", classification: "CONFIRMED (Blue, Silicate Rain Hot Jupiter)", statusClass: "status-confirmed-unique", mass: "1.13 M_Jupiter", radius: "1.14 R_Jupiter", period: "2.2 Earth Days", hostStar: "HD 189733 (K1V Orange Dwarf)", confidence: "99.9%", keyFeature: "Known for its beautiful deep blue color, caused by atmospheric clouds of silicate particles." },
+            "psr b1257+12 system": { name: "PSR B1257+12 System (b, c, d)", source: "Pulsar Timing Variations", classification: "CONFIRMED (Pulsar Planets - First Exoplanet)", statusClass: "status-confirmed-unique", mass: "0.02, 3.9, 4.3 M_Earth", radius: "N/A", period: "25-98 Earth Days", hostStar: "PSR B1257+12 (Pulsar)", confidence: "99.0%", keyFeature: "The very first exoplanets ever confirmed (1992), orbiting a rapidly spinning neutron star." },
+            "kepler-16b": { name: "Kepler-16b", source: "Transit Photometry (Kepler)", classification: "CONFIRMED (Circumbinary Planet - 'Tatooine')", statusClass: "status-confirmed-unique", mass: "0.33 M_Jupiter", radius: "0.75 R_Jupiter", period: "229 Earth Days", hostStar: "Kepler-16AB (K/M Binary)", confidence: "97.0%", keyFeature: "The first confirmed planet to orbit two stars simultaneously." },
+            "gliese 667 cc": { name: "Gliese 667 Cc", source: "Radial Velocity", classification: "CONFIRMED (Habitable Zone Super-Earth)", statusClass: "status-confirmed-habitable", mass: "3.7 M_Earth", radius: "1.5 R_Earth (Est.)", period: "28.1 Earth Days", hostStar: "Gliese 667 C (M3V Red Dwarf)", confidence: "92.0%", keyFeature: "Orbits the smallest star (C) in a triple-star system." },
+            "55 cancri e": { name: "55 Cancri e (Janssen)", source: "Radial Velocity and Transit", classification: "CONFIRMED (Scorching Hot Super-Earth/Lava World)", statusClass: "status-confirmed-hot", mass: "8.3 M_Earth", radius: "1.9 R_Earth", period: "0.74 Earth Days", hostStar: "55 Cancri A (G8V Sun-like)", confidence: "99.5%", keyFeature: "An ultra-short period planet whose surface is permanently molten lava." },
+            "kepler-452b": { name: "Kepler-452b", source: "Transit Photometry (Kepler)", classification: "CONFIRMED (Earth's Older, Bigger Cousin)", statusClass: "status-confirmed-habitable", mass: "~5 M_Earth (Est.)", radius: "1.6 R_Earth", period: "385 Earth Days", hostStar: "Kepler-452 (G2V Sun-like)", confidence: "93.5%", keyFeature: "Orbits a G2-type star similar to our Sun, but 1.5 billion years older." },
+            "ogle-2005-blg-390lb": { name: "OGLE-2005-BLG-390Lb", source: "Gravitational Microlensing", classification: "CONFIRMED (Cold Rocky Super-Earth/Iceball)", statusClass: "status-confirmed-unique", mass: "5.5 M_Earth", radius: "N/A", period: "~10 Earth Years (Est.)", hostStar: "OGLE-2005-BLG-390L (Red Dwarf)", confidence: "98.0%", keyFeature: "Due to its distance from its star, its temperature is extremely low (around -220°C)." },
+            "wasp-17b": { name: "WASP-17b", source: "Transit Photometry (WASP)", classification: "CONFIRMED (Puffy, Retrograde Hot Jupiter)", statusClass: "status-confirmed-unique", mass: "0.49 M_Jupiter", radius: "1.9 R_Jupiter", period: "3.7 Earth Days", hostStar: "WASP-17", confidence: "97.9%", keyFeature: "The puffiest known exoplanet, with an extremely low density. It has a retrograde orbit." },
+            "hr 8799 e": { name: "HR 8799 e", source: "Direct Imaging (Spectroscopy)", classification: "CONFIRMED (Directly Imaged Gas Giant)", statusClass: "status-confirmed-unique", mass: "7 M_Jupiter", radius: "N/A", period: "45 Earth Years (Est.)", hostStar: "HR 8799 (A5V)", confidence: "99.9%", keyFeature: "Part of the first system where multiple planets were confirmed by direct imaging." },
+            "kepler-10b": { name: "Kepler-10b", source: "Transit Photometry (Kepler)", classification: "CONFIRMED (First Confirmed Rocky Planet)", statusClass: "status-confirmed-hot", mass: "4.6 M_Earth", radius: "1.47 R_Earth", period: "0.84 Earth Days", hostStar: "Kepler-10 (G-type Sun-like)", confidence: "98.7%", keyFeature: "The first confirmed rocky planet discovered by the Kepler mission." },
+            "kepler-11f": { name: "Kepler-11f", source: "Transit Photometry (Kepler)", classification: "CONFIRMED (Mini-Neptune in Multi-Planet System)", statusClass: "status-super-earth", mass: "2.3 M_Earth", radius: "2.6 R_Earth", period: "47.4 Earth Days", hostStar: "Kepler-11 (G6V Sun-like)", confidence: "95.1%", keyFeature: "The outermost of the five tightly packed inner planets in the Kepler-11 system." },
+            "kepler-90g": { name: "Kepler-90g", source: "Transit Photometry (Kepler)", classification: "CONFIRMED (Gas Giant in 8-Planet System)", statusClass: "status-confirmed-hot", mass: "~40 M_Earth (Est.)", radius: "8.1 R_Earth", period: "210.6 Earth Days", hostStar: "Kepler-90 (G0V Sun-like)", confidence: "99.0%", keyFeature: "Part of the only system known (besides our own) to have eight confirmed planets." },
+            "gliese 436 b": { name: "Gliese 436 b", source: "Transit Photometry", classification: "CONFIRMED (Hot Neptune with Exotic Ice)", statusClass: "status-confirmed-unique", mass: "22 M_Earth", radius: "4.0 R_Earth", period: "2.6 Earth Days", hostStar: "Gliese 436 (M2.5V Red Dwarf)", confidence: "97.4%", keyFeature: "Maintains water ice in its core despite extremely high temperatures due to immense gravitational pressure." },
+            "hat-p-11b": { name: "HAT-P-11b", source: "HATNet Survey Transit Data", classification: "CONFIRMED (Smallest Transiting Planet with Water)", statusClass: "status-super-earth", mass: "25 M_Earth", radius: "4.7 R_Earth", period: "4.9 Earth Days", hostStar: "HAT-P-11 (K4V Orange Dwarf)", confidence: "98.5%", keyFeature: "The first exoplanet of its size (Mini-Neptune) to have water vapor detected in its atmosphere." },
+            "wasp-33b": { name: "WASP-33b", source: "Transit Photometry (WASP)", classification: "CONFIRMED (Ultra Hot Jupiter, Retrograde Orbit)", statusClass: "status-confirmed-hot", mass: "2.0 M_Jupiter", radius: "1.5 R_Jupiter", period: "1.2 Earth Days", hostStar: "WASP-33 (A-type Star)", confidence: "99.9%", keyFeature: "One of the hottest exoplanets known, with dayside temperatures over 3,200°C." },
+            "kepler-138 c": { name: "Kepler-138 c", source: "Transit Photometry (Kepler/Hubble)", classification: "CONFIRMED (Sub-Neptune 'Water World')", statusClass: "status-super-earth", mass: "1.5 M_Earth", radius: "1.5 R_Earth", period: "13.8 Earth Days", hostStar: "Kepler-138 (M1V Red Dwarf)", confidence: "91.0%", keyFeature: "Low density suggests up to half of its volume must be composed of water." },
+            "kepler-1410b": { name: "Kepler-1410b", source: "Transit Photometry (Kepler)", classification: "CONFIRMED (Super-Earth in Optimistic HZ)", statusClass: "status-confirmed-habitable", mass: "~2.5 M_Earth", radius: "1.3 R_Earth", period: "10.7 Earth Days", hostStar: "Kepler-1410 (M-type Red Dwarf)", confidence: "94.5%", keyFeature: "An Earth-to-Super-Earth sized planet that orbits its star within the conservative habitable zone." },
+            "kepler-93b": { name: "Kepler-93b", source: "Transit Photometry (Kepler)", classification: "CONFIRMED (Dense, Rocky Super-Earth)", statusClass: "status-super-earth", mass: "4.0 M_Earth", radius: "1.5 R_Earth", period: "4.7 Earth Days", hostStar: "Kepler-93 (G2V Sun-like)", confidence: "96.6%", keyFeature: "Density analysis indicates a rocky/iron composition similar to Earth's internal structure." },
+            "hd 80606 b": { name: "HD 80606 b", source: "Radial Velocity/Transit", classification: "CONFIRMED (Highly Eccentric Gas Giant)", statusClass: "status-confirmed-hot", mass: "4.0 M_Jupiter", radius: "0.9 R_Jupiter", period: "111.4 Earth Days", hostStar: "HD 80606 (G5V Sun-like)", confidence: "99.7%", keyFeature: "Has the most eccentric orbit of any known transiting planet, causing massive temperature swings." },
+            "gj 1132 b": { name: "Gliese 1132 b (GJ 1132 b)", source: "Transit Photometry (MEarth)", classification: "CONFIRMED (Hot Earth with Secondary Atmosphere)", statusClass: "status-super-earth", mass: "1.6 M_Earth", radius: "1.16 R_Earth", period: "1.6 Earth Days", hostStar: "Gliese 1132 (M4.5V Red Dwarf)", confidence: "95.5%", keyFeature: "One of the closest rocky exoplanets found. May have lost and regenerated a thick secondary atmosphere from volcanism." },
+            "k2-18 b": { name: "K2-18 b", source: "Transit Photometry (K2 Mission)", classification: "CONFIRMED (Sub-Neptune with Water Vapor)", statusClass: "status-confirmed-habitable", mass: "8.6 M_Earth", radius: "2.7 R_Earth", period: "33.0 Earth Days", hostStar: "K2-18 (M2.8V Red Dwarf)", confidence: "94.8%", keyFeature: "The first exoplanet in the habitable zone confirmed to have water vapor in its atmosphere." },
+            "vhs 1256 b": { name: "VHS 1256 b", source: "Direct Imaging", classification: "CONFIRMED (Gas Giant, Free-Floating-like)", statusClass: "status-confirmed-unique", mass: "19 M_Jupiter", radius: "N/A", period: "10,000 Earth Years (Est.)", hostStar: "VHS 1256AB (Binary Brown Dwarf)", confidence: "99.2%", keyFeature: "A massive planet orbiting a binary brown dwarf system at an extremely wide separation." },
+            "ltt 1445 ab": { name: "LTT 1445 Ab", source: "Transit Photometry (TESS)", classification: "CONFIRMED (Rocky Planet in Triple-Star System)", statusClass: "status-super-earth", mass: "2.8 M_Earth", radius: "1.35 R_Earth", period: "5.36 Earth Days", hostStar: "LTT 1445A (M Red Dwarf)", confidence: "97.0%", keyFeature: "One of the closest transiting rocky planets found, orbiting the main star in a triple-red dwarf system." },
+            "pds 70 c": { name: "PDS 70 c", source: "Direct Imaging (VLT)", classification: "CONFIRMED (Protoplanet in Formation)", statusClass: "status-confirmed-unique", mass: "3 M_Jupiter (Est.)", radius: "N/A", period: "120 Earth Years (Est.)", hostStar: "PDS 70 (T Tauri Star)", confidence: "99.0%", keyFeature: "One of two planets found directly within a gap in its star's protoplanetary disk, showing planet formation." },
+            "wasp-103 b": { name: "WASP-103 b", source: "Transit Photometry (WASP/Cheops)", classification: "CONFIRMED (Tidally Deformed Hot Jupiter)", statusClass: "status-confirmed-hot", mass: "1.5 M_Jupiter", radius: "1.5 R_Jupiter", period: "0.92 Earth Days", hostStar: "WASP-103 (F8V)", confidence: "98.9%", keyFeature: "The most tidally deformed exoplanet known, visibly stretched into an egg shape." },
+            "g j 357 d": { name: "Gliese 357 d (GJ 357 d)", source: "Transit Photometry (TESS) & RV", classification: "CONFIRMED (Super-Earth in Conservative HZ)", statusClass: "status-confirmed-habitable", mass: "6.1 M_Earth (Min)", radius: "N/A", period: "55.7 Earth Days", hostStar: "Gliese 357 (M2.5V Red Dwarf)", confidence: "93.0%", keyFeature: "Located in the conservative habitable zone. If it has a dense atmosphere, it could potentially retain liquid water." },
+            "hr 5183 b": { name: "HR 5183 b", source: "Radial Velocity", classification: "CONFIRMED (Extreme Eccentricity Gas Giant)", statusClass: "status-confirmed-unique", mass: "3 M_Jupiter (Est.)", radius: "N/A", period: "74 Earth Years (Est.)", hostStar: "HR 5183 (G0V Sun-like)", confidence: "96.0%", keyFeature: "Known as the 'whiplash planet' because of its extremely eccentric orbit." },
+            "kepler-1649 c": { name: "Kepler-1649 c", source: "Transit Photometry (Kepler Re-analysis)", classification: "CONFIRMED (Near Earth-sized in HZ)", statusClass: "status-confirmed-habitable", mass: "1.2 M_Earth (Est.)", radius: "1.06 R_Earth", period: "19.5 Earth Days", hostStar: "Kepler-1649 (M5V Red Dwarf)", confidence: "95.9%", keyFeature: "The most Earth-sized planet found in the habitable zone by the Kepler mission." },
+            "tous-1349 b": { name: "TOI-1349 b", source: "Transit Photometry (TESS)", classification: "CONFIRMED (Ultra-Hot Super-Earth)", statusClass: "status-confirmed-hot", mass: "1.8 M_Earth (Est.)", radius: "1.1 R_Earth", period: "0.8 Earth Days", hostStar: "TOI-1349 (G-type Sun-like)", confidence: "92.0%", keyFeature: "An ultra-short-period planet, likely stripped of its atmosphere by intense stellar radiation." },
+            "g j 357 b": { name: "Gliese 357 b (GJ 357 b)", source: "Transit Photometry (TESS)", classification: "CONFIRMED (Hot Super-Earth)", statusClass: "status-super-earth", mass: "1.8 M_Earth", radius: "1.2 R_Earth", period: "3.9 Earth Days", hostStar: "Gliese 357 (M2.5V Red Dwarf)", confidence: "98.0%", keyFeature: "The innermost planet in this system." },
+            "kepler-7 b": { name: "Kepler-7 b", source: "Transit Photometry (Kepler)", classification: "CONFIRMED (Low-Density 'Puffy' Gas Giant)", statusClass: "status-confirmed-hot", mass: "0.43 M_Jupiter", radius: "1.48 R_Jupiter", period: "4.88 Earth Days", hostStar: "Kepler-7 (G0V Sun-like)", confidence: "99.8%", keyFeature: "One of the first five exoplanets confirmed by the Kepler mission. Its extremely low density (less than water) made it one of the largest and puffiest 'Hot Jupiters'." }
+        };
+
+        // --- PLANET LIST (Top to Down) ---
+        const planetOrder = [
+            "Proxima Centauri b", "TRAPPIST-1e", "Kepler-186f", "WASP-12b", "HD 209458 b",
+            "Gliese 581 g", "CoRoT-7b", "51 Pegasi b", "Kepler-22b", "HD 189733 b",
+            "PSR B1257+12 System", "Kepler-16b", "Gliese 667 Cc", "55 Cancri e", "Kepler-452b",
+            "OGLE-2005-BLG-390Lb", "WASP-17b", "HR 8799 e", "Kepler-10b", "Kepler-11f",
+            "Kepler-90g", "Gliese 436 b", "HAT-P-11b", "WASP-33b", "Kepler-138 c",
+            "Kepler-1410b", "Kepler-93b", "HD 80606 b", 
+            "Gliese 1132 b (GJ 1132 b)", "K2-18 b", "VHS 1256 b", "LTT 1445 Ab", 
+            "PDS 70 c", "WASP-103 b", "Gliese 357 d (GJ 357 d)", "HR 5183 b", 
+            "Kepler-1649 c", "TOI-1349 b", "Gliese 357 b (GJ 357 b)", "Kepler-7 b"
+        ];
+
+        const listContainer = document.getElementById('planet-list');
+        const detailsContainer = document.getElementById('result-content');
+        const searchInput = document.getElementById('search-filter');
+        const aiInput = document.getElementById('ai-query-input');
+        const aiOutput = document.getElementById('ai-result-content');
+        let currentActiveItem = null; 
+
+        // Function to format mass/radius units using LaTeX-like notation
+        function formatUnit(value) {
+            return value.replace(/M_Earth/g, 'M$_{\\text{Earth}}$').replace(/M_Jupiter/g, 'M$_{\\text{Jupiter}}$').replace(/R_Earth/g, 'R$_{\\text{Earth}}$').replace(/R_Jupiter/g, 'R$_{\\text{Jupiter}}$').replace(/\(Est.\)/g, '<span style="font-weight:400; font-size: 0.9em;">(Est.)</span>');
+        }
+
+        /**
+         * Renders the details of a selected planet.
+         */
+        function renderPlanetDetails(planetKey) {
+            const data = planetData[planetKey];
+            if (!data) return;
+
+            detailsContainer.innerHTML = `
+                <p class="exoplanet-name">${data.name}</p>
+                <span class="planet-status ${data.statusClass}">${data.classification}</span>
+                
+                <h3>Discovery & Host Star</h3>
+                <p><strong>Discovery Method:</strong> ${data.source}</p>
+                <p><strong>Host Star:</strong> ${data.hostStar}</p>
+                <p><strong>Data Confidence:</strong> ${data.confidence}</p>
+
+                <h3>Physical Parameters (Simulated)</h3>
+                <p><strong>Simulated Mass:</strong> ${formatUnit(data.mass)}</p>
+                <p><strong>Simulated Radius:</strong> ${formatUnit(data.radius)}</p>
+                <p><strong>Orbital Period:</strong> ${data.period}</p>
+
+                <h3>Key Feature Analysis</h3>
+                <p>${data.keyFeature}</p>
+            `;
+        }
+
+        /**
+         * Filters the planet list.
+         */
+        function filterPlanetList() {
+            const filterValue = searchInput.value.toLowerCase();
+            const listItems = listContainer.getElementsByTagName('li');
+
+            Array.from(listItems).forEach(li => {
+                const text = li.textContent.toLowerCase();
+                if (text.includes(filterValue)) {
+                    li.style.display = '';
+                } else {
+                    li.style.display = 'none';
+                }
+            });
+        }
+        
+        // --- AI KNOWLEDGE BASE (Updated with User-Provided Data) ---
+        const aiKnowledgeBase = {
+            "exoplanet": `
+                <span style="color: #ffcc00; font-weight: 700;">[EXOPLANET DATA RETRIEVED]</span><br>
+                An **exoplanet**, or extrasolar planet, is any planet located outside of our Solar System, orbiting stars other than our Sun.
+                <br><br>
+                **Status:** More than 6,000 have been confirmed, with scientists estimating there are **billions** in our galaxy alone.
+                <br>
+                **Types:** They come in a variety of types, including **Gas Giants**, **Neptunian planets**, **Super-Earths** (rocky and larger than Earth), and **Terrestrial planets** (rocky, Earth-sized worlds). Some, called **rogue planets**, are untethered to any star.
+                <br>
+                **Purpose:** The search for exoplanets in the **habitable zone** (where liquid water could exist) is central to the search for extraterrestrial life.
+            `,
+            "solar system": `
+                <span style="color: #ffcc00; font-weight: 700;">[SOLAR SYSTEM DATA RETRIEVED]</span><br>
+                A **Solar System** is a specific type of planetary system consisting of a star (the Sun) and all the celestial objects gravitationally bound to it, including eight confirmed planets, moons, asteroids, comets, and dust.
+                <br><br>
+                **Formation:** It formed about 4.6 billion years ago from the collapse of a dense region of a molecular cloud.
+                <br>
+                **Structure:** Planets are divided into the **Inner Solar System** (four smaller, rocky terrestrial planets) and the **Outer Solar System** (four larger gas giants and ice giants).
+            `,
+            "galaxy": `
+                <span style="color: #ffcc00; font-weight: 700;">[GALAXY DATA RETRIEVED]</span><br>
+                A **galaxy** is a massive, gravitationally bound system consisting of stars, stellar remnants, an interstellar medium of gas and dust, and **dark matter**.
+                <br><br>
+                **Scale:** Galaxies can contain hundreds of millions to **trillions of stars** and are the fundamental building blocks of the universe on a large scale.
+                <br>
+                **Our Galaxy:** Our Sun and its Solar System are part of the **Milky Way Galaxy**, a large barred spiral galaxy.
+                <br>
+                **Organization:** Galaxies are clustered together in groups, clusters, and superclusters.
+            `,
+            // Using "space" as a catch-all for general astronomical context
+            "space": `
+                <span style="color: #ffcc00; font-weight: 700;">[SPACE/SYSTEM CONTEXT RETRIEVED]</span><br>
+                The terms relate to different scales of organization in the universe:
+                <br>
+                A **Planetary System** (or system) is a set of non-stellar bodies gravitationally bound to and in orbit of a star or star system. The Solar System is one example.
+                <br><br>
+                A **Galaxy** is a massive system containing hundreds of billions to trillions of stars.
+                <br>
+                An **Exoplanet** is a planet within a planetary system that is *not* our own.
+            `,
+            "default": "<p style=\"color: #e0e0f0; font-style: italic; margin-top: 0;\">Query not recognized. Please use a keyword (Exoplanet, Solar System, Galaxy, or Space) to access the Knowledge Base.</p>"
+        };
+
+        /**
+         * Simulates an AI response based on allowed keywords.
+         */
+        function getAiResponse() {
+            const query = aiInput.value.toLowerCase().trim();
+            let key = "default";
+            
+            // Simple keyword matching for the allowed terms
+            if (query.includes("exoplanet")) {
+                key = "exoplanet";
+            } else if (query.includes("solar system") || query.includes("solarsystem")) {
+                key = "solar system";
+            } else if (query.includes("galaxy")) {
+                key = "galaxy";
+            } else if (query.includes("space") || query.includes("system") || query.includes("universe")) {
+                key = "space";
+            }
+            
+            // Use the stored response, or the default message
+            let responseHtml = aiKnowledgeBase[key];
+
+            aiOutput.innerHTML = `
+                <p style="font-style: normal; color: #e0e0f0; margin-top: 0; font-size: 0.95em;">
+                    ${responseHtml}
+                </p>`;
+        }
+        // --- END AI SIMULATION LOGIC ---
+
+
+        /**
+         * Initializes the dynamic list of planets and attaches handlers.
+         */
+        function initializePlanetList() {
+            planetOrder.forEach(planetName => {
+                const li = document.createElement('li');
+                li.textContent = planetName;
+                const searchableKey = planetName.toLowerCase().replace(/ \(.+\)/, '').trim(); 
+                
+                li.addEventListener('click', () => {
+                    if (currentActiveItem) {
+                        currentActiveItem.classList.remove('active');
+                    }
+                    li.classList.add('active');
+                    currentActiveItem = li;
+                    renderPlanetDetails(searchableKey);
+                });
+                listContainer.appendChild(li);
+            });
+            
+            // Attach the filtering logic to the planet list search input
+            searchInput.addEventListener('keyup', filterPlanetList);
+            
+            // Attach the AI response logic to the AI query input
+            aiInput.addEventListener('keyup', (event) => {
+                // Trigger on Enter key or when enough text is typed
+                if (event.key === 'Enter' || event.target.value.length >= 4) {
+                    getAiResponse();
+                }
+            });
+            aiInput.addEventListener('change', getAiResponse); // Also run on blur/focus change
+        }
+
+        // Run the initialization function when the page loads
+        initializePlanetList();
+
+    </script>
+</body>
+</html>
